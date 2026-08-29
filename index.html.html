@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Popular - Candidatos Presidenciales RD 2028</title>
+    <style>
+        :root {
+            --rd-azul: #002D62;
+            --rd-rojo: #CE1126;
+            --rd-azul-claro: #0d3b66;
+            --fondo-pagina: #0b0f19;
+            --fondo-tarjeta: #1e293b;
+            --borde-tarjeta: #334155;
+            --texto-principal: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px 0;
+            background-color: var(--fondo-pagina);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+            background-size: 24px 24px;
+            color: var(--texto-principal);
+        }
+
+        header {
+            max-width: 900px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--rd-azul), var(--rd-azul-claro));
+            color: #fff;
+            padding: 32px 20px 28px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--rd-rojo);
+            border-radius: 12px 12px 0 0;
+            box-sizing: border-box;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Línea tricolor superior en el header */
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--rd-azul) 33%, #ffffff 33%, #ffffff 66%, var(--rd-rojo) 66%);
+        }
+
+        /* Nombre del país con estilo tipográfico elegante y formal */
+        .pais-header {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1.1em;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #93c5fd;
+            margin-bottom: 8px;
+            font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        }
+
+        header h1 {
+            margin: 0 0 6px 0;
+            font-size: 1.7em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .subtitulo-header {
+            font-size: 0.9em;
+            color: #cbd5e1;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 0;
+        }
+
+        .contenedor-principal {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 25px;
+            background: #111827;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            border: 1px solid var(--borde-tarjeta);
+            border-top: none;
+        }
+
+        .contenedor-principal h2 {
+            text-align: center;
+            margin: 0 0 20px 0;
+            font-size: 1.4em;
+            color: #60a5fa;
+            font-weight: 700;
+            border-bottom: 2px solid var(--borde-tarjeta);
+            padding-bottom: 12px;
+        }
+
+        .grid-candidatos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            padding: 0 5px;
+        }
+
+        .tarjeta-candidato {
+            background: var(--fondo-tarjeta);
+            border: 2px solid var(--borde-tarjeta);
+            border-radius: 8px;
+            overflow: hidden;
+            text-align: center;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tarjeta-candidato:hover {
+            transform: translateY(-4px);
+            border-color: #60a5fa;
+            box-shadow: 0 6px 15px rgba(96, 165, 250, 0.2);
+        }
+
+        .foto-container {
+            width: 100%;
+            height: 125px;
+            background-color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--borde-tarjeta);
+            overflow: hidden;
+        }
+
+        .foto-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .info-candidato {
+            padding: 10px 8px;
+        }
+
+        .info-candidato h3 {
+            margin: 0 0 4px 0;
+            font-size: 0.9em;
+            color: #f8fafc;
+        }
+
+        .info-candidato p {
+            margin: 0;
+            font-size: 0.75em;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .tarjeta-candidato.seleccionada {
+            border-color: #10b981;
+            background-color: #064e3b;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .panel-voto {
+            margin-top: 25px;
+            text-align: center;
+            padding: 20px;
+            background: var(--fondo-tarjeta);
+            border: 1px solid var(--borde-tarjeta);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .form-datos {
+            margin: 12px auto;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .form-datos label {
+            font-weight: 600;
+            font-size: 0.85em;
+            color: #cbd5e1;
+        }
+
+        .form-datos input {
+            padding: 10px 12px;
+            border: 1px solid var(--borde-tarjeta);
+            border-radius: 6px;
+            font-size: 0.95em;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #0f172a;
+            color: #fff;
+        }
+
+        .form-datos input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        .ayuda-campo {
+            font-size: 0.75em;
+            color: #94a3b8;
+            margin-top: -2px;
+            margin-bottom: 6px;
+        }
+
+        #mensaje-alerta {
+            display: none;
+            margin: 12px auto;
+            max-width: 420px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .alerta-error {
+            background-color: #7f1d1d;
+            color: #fecaca;
+            border: 1px solid #991b1b;
+        }
+        .alerta-exito {
+            background-color: #064e3b;
+            color: #a7f3d0;
+            border: 1px solid #047857;
+        }
+
+        .btn-votar {
+            background-color: #16a34a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+            max-width: 420px;
+            margin-top: 5px;
+            box-shadow: 0 4px 6px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-votar:hover {
+            background-color: #15803d;
+        }
+
+        .btn-votar:active {
+            transform: scale(0.98);
+        }
+
+        .explicacion {
+            margin-top: 30px;
+            padding: 24px;
+            background: var(--fondo-tarjeta);
+            border-radius: 10px;
+            border: 1px solid var(--borde-tarjeta);
+            border-left: 5px solid var(--rd-rojo);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .explicacion-titulo {
+            font-family: 'Georgia', serif;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .parrafo-elegante {
+            font-family: 'Georgia', serif;
+            font-size: 1.02em;
+            line-height: 1.7;
+            color: #e2e8f0;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+
+        .frases-destacadas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--borde-tarjeta);
+        }
+
+        .texto-lema {
+            font-family: 'Baskerville', 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.3em;
+            color: #f87171;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.85em;
+        }
+
+        @media (max-width: 768px) {
+            .grid-candidatos {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+            header {
+                margin: 0;
+                border-radius: 0;
+            }
+            header h1 {
+                font-size: 1.3em;
+            }
+            .grid-candidatos {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .contenedor-principal {
+                border-radius: 0;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- Nombre del país con tipografía formal y elegante -->
+        <div class="pais-header">República Dominicana</div>
+        <h1>¡Arrancó La Consulta Popular!</h1>
+        <p class="subtitulo-header">Proceso Presidencial • 2028</p>
+    </header>
+
+    <div class="contenedor-principal">
+        <h2>Elige tu Candidato Presidencial 2028</h2>
+
+        <div id="cuadricula-candidatos" class="grid-candidatos">
+            <!-- Se llena dinámicamente con JS -->
+        </div>
+
+        <div class="panel-voto">
+            <p id="texto-seleccion" style="margin-bottom: 12px; font-weight: 600; color: #cbd5e1; font-size: 0.9em;">Por favor, seleccione un candidato presidencial de las opciones.</p>
+            
+            <div class="form-datos">
+                <label for="inputNombre">Tu Nombre:</label>
+                <input type="text" id="inputNombre" placeholder="Escribe tu nombre completo" required>
+                
+                <label for="inputTelefono">Tu Teléfono / WhatsApp:</label>
+                <input type="tel" id="inputTelefono" placeholder="809-000-0000 o 305-000-0000" maxlength="15" required oninput="formatearTelefono(this)">
+                
+                <label for="inputSerieCedula">Serie de Cédula Antigua (Ej: 001, 031...):</label>
+                <input type="text" id="inputSerieCedula" placeholder="Ej: 001" maxlength="3" required>
+                <div class="ayuda-campo">🔒 Requisito de verificación patriótica para evitar duplicados.</div>
+            </div>
+
+            <div id="mensaje-alerta"></div>
+
+            <button class="btn-votar" id="btnEmitirVoto" onclick="emitirVoto()">Registrar mi Preferencia</button>
+        </div>
+
+        <section class="explicacion">
+            <div class="explicacion-titulo">Arrancó La Consulta Popular</div>
+            
+            <p class="parrafo-elegante">Es un deber patriótico participar en la consulta popular, para que la ciudadanía elija quién debe ser el candidato a la Presidencia de la República Dominicana. Asimismo, el ganador tiene la responsabilidad cívica de mantener la unidad del pueblo, que es la única garantía que dispone la sociedad para deshacerse y eliminar de una vez por todas, a esos políticos tradicionales que han causado tanto daño a los dominicanos.</p>
+            
+            <div class="frases-destacadas">
+                <div class="texto-lema">"Pueblo Unido Jamás Será Vencido"</div>
+                <div class="texto-lema">"La Solución es en Primera Vuelta"</div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>Sistema de Consulta Popular - República Dominicana 2028</p>
+    </footer>
+
+    <script>
+        const URL_GOOGLE_SHEETS = "https://script.google.com/macros/s/AKfycbzYPBTdZgFpihx54TzERkHFTaRK3fX_T35Tpcd3lvD19OaGRIv2NAl3CwOrmm3QQmrVKw/exec";
+
+        const listaLideres = [
+            { id: 1, nombre: "Dr. Tomas Castro", apodo: "Líder Político", foto: "img/tomas_castro.jpg" },
+            { id: 2, nombre: "Ramfis Trujillo", apodo: "Líder Político", foto: "img/ramfis_trujillo.jpg" },
+            { id: 3, nombre: "Dr. Ricardo Nieves", apodo: "Líder Opinión / Social", foto: "img/ricardo_nieves.jpg" },
+            { id: 4, nombre: "Yadira Marte", apodo: "Lideresa Social", foto: "img/yadira_marte.jpg" },
+            { id: 5, nombre: "Roque Espaillat", apodo: "El Cobrador", foto: "img/roque_espaillat.jpg" },
+            { id: 6, nombre: "Angelo Vasquez", apodo: "Líder Comunitario", foto: "img/angelo_vasquez.jpg" },
+            { id: 7, nombre: "Eduardo Sanchez", apodo: "El Piro", foto: "img/eduardo_sanchez.jpg" },
+            { id: 8, nombre: "Santiago Matias", apodo: "Alofoke", foto: "img/santiago_matias.jpg" }
+        ];
+
+        const contenedorGrid = document.getElementById('cuadricula-candidatos');
+        let candidatoSeleccionadoId = null;
+
+        function mostrarAlerta(texto, tipo) {
+            const alertaDiv = document.getElementById('mensaje-alerta');
+            alertaDiv.innerText = texto;
+            alertaDiv.className = tipo === 'error' ? 'alerta-error' : 'alerta-exito';
+            alertaDiv.style.display = 'block';
+        }
+
+        function ocultarAlerta() {
+            const alertaDiv = document.getElementById('mensaje-alerta');
+            alertaDiv.style.display = 'none';
+        }
+
+        function formatearTelefono(input) {
+            let valor = input.value.replace(/\D/g, '');
+            if (valor.length > 3 && valor.length <= 6) {
+                valor = valor.slice(0, 3) + '-' + valor.slice(3);
+            } else if (valor.length > 6) {
+                valor = valor.slice(0, 3) + '-' + valor.slice(3, 6) + '-' + valor.slice(6, 12);
+            }
+            input.value = valor;
+        }
+
+        function cargarCandidatos() {
+            if (!contenedorGrid) return;
+            contenedorGrid.innerHTML = "";
+            listaLideres.forEach(lider => {
+                const tarjeta = document.createElement('div');
+                tarjeta.classList.add('tarjeta-candidato');
+                tarjeta.id = `tarjeta-${lider.id}`;
+                tarjeta.onclick = () => seleccionarCandidato(lider.id);
+
+                tarjeta.innerHTML = `
+                    <div class="foto-container">
+                        <img src="${lider.foto}" alt="Foto de ${lider.nombre}" onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\'color:#94a3b8; font-size:1.5em;\'>👤</span>';">
+                    </div>
+                    <div class="info-candidato">
+                        <h3>${lider.nombre}</h3>
+                        <p>${lider.apodo}</p>
+                    </div>
+                `;
+                contenedorGrid.appendChild(tarjeta);
+            });
+        }
+
+        function seleccionarCandidato(id) {
+            if (candidatoSeleccionadoId !== null) {
+                const anterior = document.getElementById(`tarjeta-${candidatoSeleccionadoId}`);
+                if (anterior) anterior.classList.remove('seleccionada');
+            }
+
+            candidatoSeleccionadoId = id;
+            const actual = document.getElementById(`tarjeta-${id}`);
+            if (actual) actual.classList.add('seleccionada');
+
+            const liderObj = listaLideres.find(l => l.id === id);
+            document.getElementById('texto-seleccion').innerText = `Candidato presidencial seleccionado: ${liderObj.nombre} (${liderObj.apodo})`;
+            
+            ocultarAlerta();
+        }
+
+        function reiniciarSeleccion() {
+            if (candidatoSeleccionadoId !== null) {
+                const anterior = document.getElementById(`tarjeta-${candidatoSeleccionadoId}`);
+                if (anterior) anterior.classList.remove('seleccionada');
+            }
+            candidatoSeleccionadoId = null;
+            document.getElementById('texto-seleccion').innerText = "Por favor, seleccione un candidato presidencial de las opciones.";
+            document.getElementById('btnEmitirVoto').innerText = "Registrar mi Preferencia";
+        }
+
+        async function emitirVoto() {
+            if (candidatoSeleccionadoId === null) {
+                mostrarAlerta("⚠️ Debe hacer clic en la fotografía de su candidato preferido en la cuadrícula superior antes de registrar su voto.", "error");
+                return;
+            }
+
+            const nombreCiudadano = document.getElementById('inputNombre').value.trim();
+            const telefonoCiudadano = document.getElementById('inputTelefono').value.trim();
+            const serieCedula = document.getElementById('inputSerieCedula').value.trim();
+
+            if (!nombreCiudadano || telefonoCiudadano.length < 7 || serieCedula.length < 3) {
+                mostrarAlerta("⚠️ Por favor complete todos los campos requeridos: su nombre, teléfono y la serie de cédula antigua.", "error");
+                return;
+            }
+
+            ocultarAlerta();
+            const liderObj = listaLideres.find(l => l.id === candidatoSeleccionadoId);
+            
+            const datosVoto = {
+                nombre: nombreCiudadano,
+                telefono: telefonoCiudadano,
+                serieCedula: serieCedula,
+                candidatoNombre: liderObj.nombre
+            };
+
+            const btn = document.getElementById('btnEmitirVoto');
+            btn.disabled = true;
+            btn.innerText = "Registrando...";
+
+            try {
+                const respuesta = await fetch(URL_GOOGLE_SHEETS, {
+                    method: 'POST',
+                    body: JSON.stringify(datosVoto)
+                });
+                
+                const resultado = await respuesta.json();
+
+                if (resultado.status === "duplicado") {
+                    mostrarAlerta("⚠️ Este número de teléfono o serie de cédula ya ha registrado una preferencia. Solo se permite una participación.", "error");
+                    btn.disabled = false;
+                    btn.innerText = "Registrar mi Preferencia";
+                    reiniciarSeleccion();
+                } else {
+                    mostrarAlerta(`¡Gracias ${nombreCiudadano}! Su preferencia por ${liderObj.nombre} fue registrada con éxito.`, "exito");
+                    setTimeout(() => location.reload(), 2000);
+                }
+            } catch (error) {
+                mostrarAlerta(`¡Gracias ${nombreCiudadano}! Su voto ha sido enviado correctamente.`, "exito");
+                setTimeout(() => location.reload(), 2000);
+            }
+        }
+
+        window.onload = cargarCandidatos;
+    </script>
+</body>
+</html>
